@@ -230,17 +230,15 @@ export function initCases(lenis) {
   function makeView(c) {
     const { data } = c;
     if (data.kind === "temporal") {
-      // the public site ships without the benchmark pages and mirrors a baked copy of the run instead
-      const src = `bench/temporal/${data.page.name}.html`;
+      // a baked copy of the run (tools/bake_mirror.py) stands in for the benchmark page, which the public site does not ship
       c.sim = { frame: null, bench: null, t: -1 };
-      fetch(src, { method: "HEAD" }).then((r) => r.ok, () => false).then((live) => {
-        if (cur !== c) return;
-        if (!live) { replayBaked(c); return; }
+      replayBaked(c).then((shown) => {
+        if (shown || cur !== c) return;
         const frame = document.createElement("iframe");
         frame.className = "sim-src";
         frame.setAttribute("aria-hidden", "true");
         frame.tabIndex = -1;
-        frame.src = `${src}?bench=1${data.page.query}`;
+        frame.src = `bench/temporal/${data.page.name}.html?bench=1${data.page.query}`;
         stage.appendChild(frame);
         c.sim.frame = frame;
         frame.addEventListener("load", () => replayTemporal(c, frame));
@@ -286,12 +284,12 @@ export function initCases(lenis) {
     if (isStatic(c.data)) Object.assign(c.sim, { cps, hitsUpTo, k: -1, marks: c.view.markers(hits, { color: 0xff5a5a }) });
   }
 
-  /** Same replay as replayTemporal, posed from data/cases/<key>.mirror.json (tools/bake_mirror.py) instead of the live page. */
+  /** Same replay as replayTemporal, posed from data/cases/<key>.mirror.json (tools/bake_mirror.py) instead of the live
+   *  page; resolves false when there is no baked copy. */
   async function replayBaked(c) {
     const b = await fetch(`data/cases/${c.key}.mirror.json`).then((r) => (r.ok ? r.json() : null), () => null);
     const src = b && await bakedSource(b);
-    if (cur !== c) return;
-    if (!src) { strobeFallback(c); return; }
+    if (!src || cur !== c) return Boolean(src);
     src.frame(0);
     const canvas = document.createElement("canvas");
     canvas.className = "case-canvas";
@@ -307,6 +305,7 @@ export function initCases(lenis) {
       Object.assign(c.sim, { cps: Array.from({ length: src.frames }, (_, k) => k), hitsUpTo: src.hitsUpTo, k: -1,
         marks: c.view.markers(src.hits, { color: 0xff5a5a }) });
     }
+    return true;
   }
 
   /** The recorded strobe frames stand in when neither the live page nor a baked copy can be shown (e.g. no WebGL context left). */
