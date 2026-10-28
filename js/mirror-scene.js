@@ -63,6 +63,84 @@ function copyLight(l) {
 
 const shown = (o) => { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; };
 
+function decode(s, type = "Float32Array") {
+  const bin = atob(s);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return new (TYPED[type] || Float32Array)(u8.buffer);
+}
+
+function bakedLight(l) {
+  let o = null;
+  if (l.type === "hemi") o = new THREE.HemisphereLight(l.color, l.groundColor, l.intensity);
+  else if (l.type === "ambient") o = new THREE.AmbientLight(l.color, l.intensity);
+  else if (l.type === "point") o = new THREE.PointLight(l.color, l.intensity, l.distance, l.decay);
+  else if (l.type === "spot") o = new THREE.SpotLight(l.color, l.intensity);
+  else if (l.type === "dir") {
+    o = new THREE.DirectionalLight(l.color, l.intensity);
+    o.target.position.fromArray(l.target);
+    o.castShadow = l.castShadow;
+    o.shadow.mapSize.set(l.shadow.mapSize[0], l.shadow.mapSize[1]);
+    Object.assign(o.shadow, { bias: l.shadow.bias, normalBias: l.shadow.normalBias, radius: l.shadow.radius });
+    const [left, right, top, bottom, near, far] = l.shadow.camera;
+    Object.assign(o.shadow.camera, { left, right, top, bottom, near, far });
+  }
+  if (o) o.position.fromArray(l.position);
+  return o;
+}
+
+/**
+ * A stand-in for a benchmark page's scene, rebuilt from tools/bake_mirror.py output so the public site can mirror a
+ * replay without the page. frame(k) poses every object as the page had it at baked frame k (a time sample for D3, the
+ * state after action k for D7); objects the page created later join the scene at their first frame.
+ */
+export async function bakedSource(b) {
+  const scene = new THREE.Scene();
+  const geos = b.geos.map((g) => {
+    const out = new THREE.BufferGeometry();
+    for (const [name, a] of Object.entries(g.attrs)) out.setAttribute(name, new THREE.BufferAttribute(decode(a.data, a.type), a.itemSize, a.normalized));
+    if (g.index) out.setIndex(new THREE.BufferAttribute(decode(g.index.data, g.index.type), 1));
+    for (const [start, count, mi] of g.groups) out.addGroup(start, count, mi);
+    return out;
+  });
+  const mats = await Promise.all(b.mats.map(async (m) => {
+    if (!m.sprite) {
+      return new THREE.MeshStandardMaterial({
+        color: m.color ?? 0xcccccc, roughness: m.roughness ?? 1, metalness: m.metalness ?? 0, emissive: m.emissive ?? 0,
+        transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite, side: m.side, flatShading: m.flatShading,
+      });
+    }
+    let map = null;
+    if (m.map) {
+      const im = new Image();
+      im.src = m.map;
+      await im.decode();
+      map = new THREE.Texture(im);
+    }
+    return new THREE.SpriteMaterial({ map, depthTest: m.depthTest, opacity: m.opacity, transparent: true });
+  }));
+  for (const l of b.lights) { const o = bakedLight(l); if (o) scene.add(o); }
+  const objs = b.objs.map((ob) => {
+    const o = ob.sprite ? new THREE.Sprite(mats[ob.mat]) : new THREE.Mesh(geos[ob.geo], mats[ob.mat]);
+    Object.assign(o, { matrixAutoUpdate: false, castShadow: ob.castShadow, receiveShadow: ob.receiveShadow, renderOrder: ob.renderOrder });
+    o.userData.glass = ob.glass;
+    const track = ob.track ? decode(ob.track) : null;
+    if (!track) { o.matrix.fromArray(ob.m); o.visible = Boolean(ob.v); }
+    return { o, born: ob.born, track, added: false };
+  });
+  function frame(k) {
+    for (const e of objs) {
+      if (!e.added && k >= e.born) { scene.add(e.o); e.added = true; }
+      if (!e.track) continue;
+      const i = k * 18;
+      e.o.matrix.fromArray(e.track, i);
+      e.o.visible = e.track[i + 16] > 0.5;
+      e.o.material.opacity = e.track[i + 17];
+    }
+  }
+  return { scene, frame, frames: b.frames, times: b.times, hits: b.hits, hitsUpTo: b.hitsUpTo };
+}
+
 /**
  * Re-renders a benchmark page's own scene graph (geometry, materials, lights and live transforms) with the site's
  * camera on the site's dark stage. `src` is the page's THREE.Scene; call sync() after the page moved its objects.

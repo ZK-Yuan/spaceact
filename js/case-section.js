@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { createCaseScene } from "./case-scene.js";
 import { t as tr } from "./i18n.js";
-import { createMirrorScene } from "./mirror-scene.js";
+import { bakedSource, createMirrorScene } from "./mirror-scene.js";
 import { interpPose } from "./m1-section.js";
 import { caseRows } from "./results-data.js";
 
@@ -230,12 +230,12 @@ export function initCases(lenis) {
   function makeView(c) {
     const { data } = c;
     if (data.kind === "temporal") {
-      // the public site ships without the benchmark pages; then the recorded frames play straight away
+      // the public site ships without the benchmark pages and mirrors a baked copy of the run instead
       const src = `bench/temporal/${data.page.name}.html`;
       c.sim = { frame: null, bench: null, t: -1 };
       fetch(src, { method: "HEAD" }).then((r) => r.ok, () => false).then((live) => {
         if (cur !== c) return;
-        if (!live) { strobeFallback(c); return; }
+        if (!live) { replayBaked(c); return; }
         const frame = document.createElement("iframe");
         frame.className = "sim-src";
         frame.setAttribute("aria-hidden", "true");
@@ -286,7 +286,30 @@ export function initCases(lenis) {
     if (isStatic(c.data)) Object.assign(c.sim, { cps, hitsUpTo, k: -1, marks: c.view.markers(hits, { color: 0xff5a5a }) });
   }
 
-  /** The recorded strobe frames stand in for the live page when it is absent or cannot start (e.g. no WebGL context left). */
+  /** Same replay as replayTemporal, posed from data/cases/<key>.mirror.json (tools/bake_mirror.py) instead of the live page. */
+  async function replayBaked(c) {
+    const b = await fetch(`data/cases/${c.key}.mirror.json`).then((r) => (r.ok ? r.json() : null), () => null);
+    const src = b && await bakedSource(b);
+    if (cur !== c) return;
+    if (!src) { strobeFallback(c); return; }
+    src.frame(0);
+    const canvas = document.createElement("canvas");
+    canvas.className = "case-canvas";
+    stage.insertBefore(canvas, stage.firstChild);
+    c.view = createMirrorScene(canvas, src.scene, { seeThrough: (o) => o.userData.glass ?? null });
+    const nearest = (t) => {
+      let lo = 0, hi = src.times.length - 1;
+      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (src.times[mid] <= t) lo = mid; else hi = mid; }
+      return Math.abs(src.times[hi] - t) < Math.abs(src.times[lo] - t) ? hi : lo;
+    };
+    c.sim.bench = { showAt: (t) => src.frame(nearest(t)), rollback: (k) => src.frame(k) };
+    if (isStatic(c.data)) {
+      Object.assign(c.sim, { cps: Array.from({ length: src.frames }, (_, k) => k), hitsUpTo: src.hitsUpTo, k: -1,
+        marks: c.view.markers(src.hits, { color: 0xff5a5a }) });
+    }
+  }
+
+  /** The recorded strobe frames stand in when neither the live page nor a baked copy can be shown (e.g. no WebGL context left). */
   function strobeFallback(c) {
     if (c.sim.frame) c.sim.frame.remove();
     const img = document.createElement("img");
