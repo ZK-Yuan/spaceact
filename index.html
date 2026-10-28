@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpaceAct — 3D Spatial &amp; Temporal Reasoning through Closed-Loop Action</title>
+  <meta name="description" content="SpaceAct is an interactive benchmark of 108 LEGO and mechanical-puzzle tasks where multimodal models must read rulers, move their own camera, act step by step and recover from rollbacks.">
+  <meta property="og:title" content="SpaceAct">
+  <meta property="og:description" content="Answering questions about a 3D scene is not the same as acting in one.">
+  <meta property="og:image" content="media/hero/wall.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='-534%20-476%20956%20956'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20gradientUnits='userSpaceOnUse'%20x1='-394'%20y1='-60'%20x2='283'%20y2='60'%3E%3Cstop%20offset='0'%20stop-color='%23e0338a'/%3E%3Cstop%20offset='.45'%20stop-color='%23b55bd0'/%3E%3Cstop%20offset='1'%20stop-color='%2335c9e8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg%20fill='url(%23g)'%3E%3Cpath%20d='M-125.218,-393.996L-220.747,-228.535C-267.437,-147.667-209.678,-46.5843-116.87,-46.9135L282.163,-47.0414L83.6668,-391.869C36.5723,-472.901-78.5713,-471.89-125.218,-393.996Z'/%3E%3Cpath%20d='M110.601,230.061L15.0715,395.522C-31.6177,476.39-148.037,476.911-194.156,396.372L-393.562,50.7357L4.31635,50.2245C98.0393,50.4936,154.735,150.717,110.601,230.061Z'/%3E%3C/g%3E%3C/svg%3E">
+  <script>
+    (() => {
+      const q = new URLSearchParams(location.search).get("lang");
+      let lang = q === "zh" || q === "en" ? q : null;
+      try {
+        if (lang) localStorage.setItem("spaceact-lang", lang);
+        else lang = localStorage.getItem("spaceact-lang");
+      } catch (e) { /* storage blocked */ }
+      if (!lang) lang = "en";
+      const root = document.documentElement;
+      root.dataset.lang = lang;
+      root.lang = lang === "zh" ? "zh-CN" : "en";
+      if (lang === "zh") {
+        root.classList.add("i18n-pending");
+        setTimeout(() => root.classList.remove("i18n-pending"), 3000);
+      }
+    })();
+  </script>
+  <link rel="preload" href="fonts/space-grotesk-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="js/vendor/lenis.css">
+  <link rel="stylesheet" href="css/site.css">
+  <script type="importmap">
+    { "imports": { "three": "./js/vendor/three.module.js", "three/addons/": "./js/vendor/three-addons/" } }
+  </script>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="#hero"><svg class="brand-mark" viewBox="-534 -476 956 956" aria-hidden="true"><defs><linearGradient id="brand-grad" gradientUnits="userSpaceOnUse" x1="-394" y1="-60" x2="283" y2="60"><stop offset="0" stop-color="#e0338a"/><stop offset=".45" stop-color="#b55bd0"/><stop offset="1" stop-color="#35c9e8"/></linearGradient></defs><path d="M-125.218,-393.996L-220.747,-228.535C-267.437,-147.667-209.678,-46.5843-116.87,-46.9135L282.163,-47.0414L83.6668,-391.869C36.5723,-472.901-78.5713,-471.89-125.218,-393.996Z"/><path d="M110.601,230.061L15.0715,395.522C-31.6177,476.39-148.037,476.911-194.156,396.372L-393.562,50.7357L4.31635,50.2245C98.0393,50.4936,154.735,150.717,110.601,230.061Z"/></svg>SpaceAct</a>
+    <div class="nav-links">
+      <a href="#run" data-zh="主案例">The Run</a>
+      <a href="#how" data-zh="机制">How it works</a>
+      <a href="#compare" data-zh="有何不同">Why SpaceAct</a>
+      <a href="#more" data-zh="回放">Replays</a>
+      <a href="#results" data-zh="结果">Results</a>
+      <a href="#diagnosis" data-zh="瓶颈">Diagnosis</a>
+      <a href="#findings" data-zh="发现">Findings</a>
+      <button class="lang-toggle" type="button" aria-label="切换到中文" data-zh="EN" data-zh-aria-label="Switch to English">中文</button>
+    </div>
+  </nav>
+
+  <header id="hero" class="hero">
+    <div class="hero-mosaic" aria-hidden="true">
+      <div class="wall">
+        <video class="wall-all" muted loop playsinline preload="auto" poster="media/hero/wall.jpg" src="media/hero/wall.mp4"></video>
+        <video class="wall-one" muted loop playsinline preload="auto" poster="media/hero/one.jpg" src="media/hero/one.mp4"></video>
+      </div>
+    </div>
+    <div class="hero-veil"></div>
+
+    <div class="hero-content">
+      <p class="eyebrow" data-zh="面向多模态大模型的交互式基准">An interactive benchmark for multimodal models</p>
+      <h1 class="title" aria-label="SpaceAct">SpaceAct</h1>
+      <p class="lede" data-zh="能回答关于三维场景的问题，<br>不等于能在其中<em>行动</em>。">Answering questions about a 3D scene<br>is not the same as <em>acting</em> in one.</p>
+      <p class="sub" data-zh="108 道乐高与机械谜题任务。全程不给坐标：模型要自己读标尺、自己转镜头、一轮一轮地操作，并从自己的碰撞中恢复过来。">108 LEGO and mechanical-puzzle tasks. No coordinates are given: the model reads rulers, moves its own camera, acts turn by turn, and recovers from its own collisions.</p>
+      <p class="authors">Chenglong Shi<sup>*‡</sup>, Zekai Yuan<sup>*‡</sup>, Yue Song<sup>‡</sup>, Jon Pu<sup>†</sup>, Will Wu<sup>†</sup><span class="aff">Tencent HY</span></p>
+      <p class="author-notes" data-zh="<sup>*</sup>共同第一作者 · <sup>†</sup>通讯作者 · <sup>‡</sup>混元实习期间完成"><sup>*</sup>Equal contribution · <sup>†</sup>Corresponding authors · <sup>‡</sup>Work done during an internship at Tencent HY</p>
+      <div class="cta">
+        <a class="btn primary" href="paper/SpaceAct.pdf" target="_blank" rel="noopener" data-zh="论文 <small>PDF</small>">Paper <small>PDF</small></a>
+        <a class="btn soon" href="#" aria-disabled="true" data-zh="代码 <small>即将发布</small>">Code <small>soon</small></a>
+        <a class="btn" href="#results" data-zh="排行榜">Leaderboard</a>
+        <a class="btn ghost" href="#run" data-zh="看一局回放 ↓">Watch a run ↓</a>
+      </div>
+      <ul class="stats">
+        <li><b data-count="6">6</b><span data-zh="大类">categories</span></li>
+        <li><b data-count="36">36</b><span data-zh="题族">task families</span></li>
+        <li><b data-count="108">108</b><span data-zh="已验证实例">verified instances</span></li>
+        <li><b data-count="100">100</b><span data-zh="轮闭环">turn closed loop</span></li>
+        <li><b data-count="10">10</b><span data-zh="参评模型">models evaluated</span></li>
+      </ul>
+    </div>
+    <a class="scroll-hint" href="#run"><span data-zh="向下滚动，看模型如何穿过三面墙">Scroll to watch a model thread three walls</span><i></i></a>
+  </header>
+
+  <section id="run" class="run">
+    <div class="stage">
+      <canvas id="run-canvas" aria-label="Replay of GPT-6 Astra passing a payload through three walls" data-zh-aria-label="GPT-6 Astra 让载荷穿过三面墙的回放"></canvas>
+      <div class="stage-flash"></div>
+
+      <div class="chapters">
+        <article class="chapter" data-ch="0">
+          <p class="kicker" data-zh="第 1–15 轮 · 观察">Turns 1–15 · Look</p>
+          <h2 data-zh="动手之前，<br>先看了十五次。">Fifteen looks before<br>the first move.</h2>
+          <p data-zh="没有坐标，没有地图，只有一台相机。GPT-6 Astra 用前十五轮把相机沿走廊推进、从头顶和侧面观察，对着方格读出每面墙的开口形状。每个<span class='az'>蓝点</span>都是它自己选的视角。">No coordinates, no map — only a camera. GPT-6 Astra spends its first fifteen turns moving that camera down the corridor, overhead and from the side, reading each wall's openings off the cube grid. Every <span class="az">blue dot</span> is a viewpoint it chose.</p>
+        </article>
+        <article class="chapter" data-ch="1">
+          <p class="kicker" data-zh="第 16–18 轮 · 第一面墙">Turns 16–18 · Wall one</p>
+          <h2 data-zh="转、转、推。">Turn, turn, slide.</h2>
+          <p data-zh="看清形状之后，它先把载荷居中，绕 Z 轴转 180°、绕 X 轴转 90°，对准第一面墙的之字形开口，再直线推进 14 个凸点穿过去。">Once it knows the shape, it centres the payload, turns it 180° about Z and 90° about X to match the first wall's zigzag opening, and slides 14 studs straight through.</p>
+        </article>
+        <article class="chapter" data-ch="2">
+          <p class="kicker" data-zh="第 19–64 轮 · 藏起来的墙">Turns 19–64 · The hidden wall</p>
+          <h2 data-zh="花 46 轮<br>找一个视角。">46 turns hunting<br>for a view.</h2>
+          <p data-zh="第二面墙的开口被第一面墙挡住了。模型把相机伸进缝隙，几次把视角卡进了墙里，最后把视点一路挪到走廊尽头再回头看。这期间载荷只动了一次。">The second wall's opening hides behind the first. The model pushes its camera into the gap, ends up inside walls more than once, and finally walks the viewpoint to the far end of the corridor to look back. The payload moves once.</p>
+        </article>
+        <article class="chapter" data-ch="3">
+          <p class="kicker" data-zh="第 65 轮 · 唯一一次碰撞">Turn 65 · The only collision</p>
+          <h2 data-zh="转了半度，<br>就停下了。">Half a degree,<br>then stop.</h2>
+          <p data-zh="它在离棕色墙太近的地方尝试转 180°。转到 0.5° 就被挡住，执行在第一个失败处停止，后面排着的三个动作全部跳过。它把这半度转回来，后退两个凸点，在空旷处重新转身。">It tries a 180° turn too close to the brown wall. The turn is blocked after 0.5°, execution stops at the first failure and its three queued actions are skipped. It undoes the half degree, backs up two studs and turns in open space.</p>
+        </article>
+        <article class="chapter" data-ch="4">
+          <p class="kicker" data-zh="第 69–71 轮 · 穿过">Turns 69–71 · Through</p>
+          <h2 data-zh="三轮，<br>穿过两面墙。">Two walls<br>in three turns.</h2>
+          <p data-zh="穿过棕色墙，看一眼蓝色墙，再用一次包含四个动作的回复——抬高、转、转、推进 12 个凸点——直接落进终点。共移动 17 次，最优解是 14 次：功夫都花在了看上。">Through the brown wall, one look at the blue one, then a single four-action reply — rise, turn, turn, slide 12 studs — lands it in the goal. 17 moves against a 14-move optimum: the effort went into looking.</p>
+        </article>
+        <article class="chapter" data-ch="5">
+          <p class="kicker" data-zh="同一实例 · 10 个模型">Same instance · 10 models</p>
+          <h2 data-zh="两个<br>穿了过去。">Two made it<br>through.</h2>
+          <p data-zh="另外 9 个模型，同一道题，同样 100 轮。Claude Opus 5.5 也穿了过去；其余 8 个都停在墙前，最远的沿走廊推进了 39%。未通关的模型撞了 8–42 次，GPT-6 Astra 只撞了一次。">Nine other models, same task, same 100 turns. Claude Opus 5.5 also made it through; the other 8 stopped at the walls (the closest got 39% of the way along the corridor). The failed runs collided 8–42 times; GPT-6 Astra collided once.</p>
+        </article>
+      </div>
+
+      <div class="hud">
+        <div class="hud-id"><span class="dot"></span><b>GPT-6 Astra</b><span data-zh="M1 · 形状穿墙 · L5">M1 · Shape Through Walls · L5</span></div>
+        <div class="hud-turn"><span data-zh="轮次">TURN</span><b id="hud-turn">000</b><span>/ 100</span></div>
+        <figure class="eye" id="eye">
+          <img id="eye-img" alt="The frame the model saw" data-zh-alt="模型看到的画面" src="media/m1/eye/turn_000.jpg">
+          <figcaption><span class="rec"></span><b data-zh="模型看到的画面">What the model saw</b><span id="eye-cap" data-zh="开始">start</span></figcaption>
+        </figure>
+        <div class="hud-action">
+          <div class="chips" id="hud-chips"></div>
+          <p id="hud-why" class="why"></p>
+        </div>
+        <div class="hud-meters">
+          <div class="counters">
+            <div class="ctr az"><b id="ctr-looks">0</b><span data-zh="观察">looks</span></div>
+            <div class="ctr gold"><b id="ctr-moves">0</b><span data-zh="移动">moves</span></div>
+            <div class="ctr mag"><b id="ctr-hits">0</b><span data-zh="碰撞">collisions</span></div>
+          </div>
+          <div class="corridor" id="hud-corridor"><span class="lbl" data-zh="起点">start</span><span class="lbl end" data-zh="终点">goal</span></div>
+        </div>
+        <div class="hud-timeline" id="hud-timeline"><div class="fill" id="hud-fill"></div></div>
+        <div class="hud-legend">
+          <span><i class="k-camera"></i><b data-zh="只动镜头">camera only</b></span><span><i class="k-move"></i><b data-zh="移动 / 旋转">move / turn</b></span><span><i class="k-reject"></i><b data-zh="碰撞">collision</b></span><span><i class="k-finish"></i><b data-zh="到达终点">goal</b></span>
+        </div>
+      </div>
+
+      <div class="board" id="board">
+        <div class="board-head"><span data-zh="M1-L5 · 同一实例 · 走廊推进">M1-L5 · same instance · corridor progress</span><span data-zh="碰撞">collisions</span></div>
+        <div id="board-rows"></div>
+        <p class="board-note" data-zh="10 个模型全部跑完。">All 10 models finished.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="how">
+    <div class="sec-head">
+      <p class="eyebrow" data-zh="机制讲解">How it works</p>
+      <h2 data-zh="四条设计原则。">Four design principles.</h2>
+      <p data-zh="每道题都跑同一个闭环：模型看到渲染画面和几行文字反馈，回复一批动作，环境按真实几何执行这些动作。论文配套的智能体框架 SAPA 让每个模型都在完全相同的信息条件下接受评测。">Every task runs the same closed loop: the model sees rendered images and a few lines of feedback, replies with a batch of actions, and the environment executes them with real geometry. The paper's agent framework, SAPA, holds every model to exactly the same information.</p>
+    </div>
+    <div class="how-grid principles">
+      <article class="how-card">
+        <figure class="how-fig flip" data-flip="media/m1/eye/turn_%03d.jpg" data-from="0" data-to="20" data-ms="420"><img src="media/m1/eye/turn_000.jpg" alt="Successive views the model chose for itself" data-zh-alt="模型自己选的一连串视角" loading="lazy"><span class="how-tag" data-zh="<i class='rec'></i>模型看到的画面 · M1 · 第 <b>000</b> 轮"><i class="rec"></i>what the model saw · M1 · turn <b>000</b></span></figure>
+        <div class="how-body"><span class="how-n">01</span><h3 data-zh="主动三维定位">Active 3D grounding</h3><p class="how-k" data-zh="读标尺，转相机。">Read rulers. Move the camera.</p><p data-zh="文本里从不给出任何物体的坐标。场景里铺着三色标尺、投影墙和展板，模型要在 100 轮预算内自己调用 camera(az, el, zoom, pan) 绕开遮挡。在 M1 上，GPT-6 Astra 观察了 69 次，只移动了 17 次。">No object coordinates ever appear in text. The scene carries tri-color rulers, projection walls and display boards, and within a 100-turn budget the model calls camera(az, el, zoom, pan) itself to see past occlusion. On M1, GPT-6 Astra looked 69 times and moved 17.</p></div>
+      </article>
+      <article class="how-card">
+        <figure class="how-fig light"><img src="media/how/physics.jpg" alt="Swept collision of a rotating block, and a loaded cantilever" data-zh-alt="旋转积木的扫掠碰撞，以及受载的悬臂" loading="lazy"><span class="how-tag" data-zh="概念示意 · 论文图 2">conceptual · paper Fig. 2</span></figure>
+        <div class="how-body"><span class="how-n">02</span><h3 data-zh="受物理约束的动作">Physics-constrained action</h3><p class="how-k" data-zh="检查完整的运动路径。">Check the full motion path.</p><p data-zh="每个动作都按不超过 0.05 个凸点或 0.5° 的细步长扫掠执行，没有运动规划器代劳。整条路径都要检查碰撞与拓扑约束；结构由经 StableLego 标定的刚体平衡求解器校核，与 Gurobi 参考的一致率为 99.85%。">Every action is swept in substeps of at most 0.05 stud or 0.5°, with no motion planner to help. Collisions and topology are checked along the whole path, and structures by a rigid-body equilibrium solver calibrated against StableLego, which agrees with a Gurobi reference on 99.85% of cases.</p></div>
+      </article>
+      <article class="how-card">
+        <figure class="how-fig strobe" data-strobe="media/cases/z20/turn_005_%d.jpg"><img src="media/cases/z20/turn_005_1.jpg" alt="Five frames a quarter second apart" data-zh-alt="间隔 0.25 秒的五帧画面" loading="lazy"><div class="strip"></div></figure>
+        <div class="how-body"><span class="how-n">03</span><h3 data-zh="可控时间的动力学">Controlled-time dynamics</h3><p class="how-k" data-zh="思考时暂停，行动时计时。">Think paused. Act in time.</p><p data-zh="模型思考时世界时钟冻结，只随带时长的物理动作推进，各家 API 的推理耗时因此不影响结果。动态题每次返回同一视角下间隔 0.25 秒的 5 帧画面，速度、角速度和周期都要从画面里估计。这里是 D3 里驶出隧道的列车。">The world clock is frozen while the model thinks and advances only with timed physical actions, so API latency never matters. Dynamic tasks return five frames from the same viewpoint, 0.25 s apart, and speeds, angular velocities and periods must be read from them. Here, D3's train leaving its tunnel.</p></div>
+      </article>
+      <article class="how-card">
+        <figure class="how-fig"><img src="media/how/rollback.jpg" alt="Split frame: the rejected brick in magenta on the left, the restored bridge on the right" data-zh-alt="分屏画面：左边品红色的是被拒绝的砖块，右边是恢复后的桥" loading="lazy"></figure>
+        <div class="how-body"><span class="how-n">04</span><h3 data-zh="可控的失败诊断">Controlled failure diagnosis</h3><p class="how-k" data-zh="用好反馈，定位瓶颈。">Use feedback. Isolate bottlenecks.</p><p data-zh="一批动作里第一个违规的动作会截断执行、跳过其余动作，下一张画面是 1280×640 的左右分屏：左边品红标出出错的零件、亮蓝标出碰到的障碍，右边是回滚后的合法状态。另跑的诊断条件再把某项能力换成真值或拿掉：给参考计划（+plan）、给精确三维状态（+state）、去掉图像（blind）或锁住相机（no-camera）。">The first violation in a batch stops execution and skips the rest; the next image is a 1280×640 split screen, with the offending part in magenta and the obstacle in bright blue on the left, and the restored valid state on the right. Separate diagnostic runs then replace one capability with ground truth or take it away: a reference plan (+plan), the exact 3D state (+state), no images (blind) or a locked camera (no-camera).</p><p class="how-src" data-zh="图：GPT-6 Astra 在 B1 第 39 轮，一块砖伸进了桥下的净空禁区，被回滚。">Pictured: GPT-6 Astra on B1, turn 39, a brick pushed into the clearance zone under the bridge is rolled back.</p></div>
+      </article>
+    </div>
+    <div class="sapa">
+      <div class="sapa-head">
+        <p class="eyebrow" data-zh="SAPA 的一轮">One turn of SAPA</p>
+        <h3 data-zh="每轮一次调用，三个阶段。">One call per turn, three stages.</h3>
+      </div>
+      <ol class="sapa-steps">
+        <li><span class="how-n">A</span><h4 data-zh="观察与动态记忆">Observe and remember</h4><p data-zh="带标尺的渲染图或 5 帧频闪条；任务目标、物理规则与轮数提示；该任务可用的工具；最近 10 轮文字和最近 2 张图，以及模型自己改写的持久笔记。">A rendered image with rulers, or a 5-frame strobe strip; the goal, the physical rules and the turn counter; the task's tools; the last 10 text turns and the last 2 images, plus a persistent note the model rewrites itself.</p></li>
+        <li><span class="how-n">B</span><h4 data-zh="推理并调用工具">Reason and call tools</h4><p data-zh="模型回复一个 JSON：理由、新的笔记和 1–5 个工具调用。三维定位、时序估计、对上次回滚的反思和规划，都在这一次调用里完成。">The model replies with one JSON object: a rationale, a new note and 1–5 tool calls. Grounding, timing, reflecting on the last rollback and planning all happen in that single call.</p><code>{"reason": "…", "note": "…", "actions": [ … ]}</code></li>
+        <li><span class="how-n">C</span><h4 data-zh="执行与反馈">Execute and feed back</h4><p data-zh="工具调用按顺序扫掠执行，第一次违规就截断并返回分屏回滚图，每个调用的结果都写进文字反馈。批量调用让模型调用次数减少 23%–60%（中位数 50%）。">The calls run in order as swept motions; the first violation truncates the batch and returns the split-screen rollback, and every call's result is reported in text. Batching cuts model calls by 23%–60% (median 50%).</p></li>
+      </ol>
+      <p class="sapa-score" data-zh="<b>计分</b>通关局得 40–100 分，多余动作、碰撞和轮数都会扣分；未通关局按达到的最大进度得 0–35 分。以荷载测试结束的搭建题（B1–B3）只记通过与否。"><b>Scoring</b>Solved episodes score 40–100 and lose points for surplus actions, collisions and turns; unsolved episodes score 0–35 by the furthest progress reached. Builds that end in a load test (B1–B3) count pass or fail only.</p>
+    </div>
+    <article class="how-card wide levers">
+      <figure class="how-fig"><img class="lv-img" src="media/how/lever_base.jpg" alt="The M3 C-ring task at level 5" data-zh-alt="L5 档的 M3 开口圈题" loading="lazy">
+        <div class="lv-text" hidden><span data-zh="L5 的反馈">Level 5 feedback</span><code>turned +0.5 of +180.0 deg about y before the contact</code><span data-zh="L7 的反馈">Level 7 feedback</span><code>stopped early by the contact</code><small data-zh="GPT-6 Astra 在 M1 上唯一一次碰撞，两个难度各自怎么报告">GPT-6 Astra's one collision on M1, as each level reports it</small></div>
+      </figure>
+      <div class="how-body"><span class="how-n" data-zh="难度档">Difficulty</span><h3 data-zh="L7 把线索拿走。">Level 7 takes the cues away.</h3><p data-zh="参数化题族沿各自的难度轴分档：L1 只有一两条约束、余量宽松；L3 耦合多条约束并加入诱饵；L5 收紧公差，加入手性诱饵、斜投影或多分支同步。L7 保持 L5 的题目不变，只加感知与坐标系杠杆。下面是 L5 的 M3 开口圈，每次只加一种杠杆，后面的数字是它让最强 3 个模型平均分变化了多少（论文表 C.1）：">Parameterized families are graded along their own axes: L1 has one or two constraints with generous margins, L3 couples several and adds decoys, L5 tightens tolerances and adds chiral decoys, oblique projections or multi-branch timing. L7 keeps the L5 task and adds perception and coordinate-frame levers. Below, the M3 C-ring at level 5 with one lever at a time; the number is how far that lever moved the top three models' mean score (paper Table C.1):</p>
+        <div class="lv-tabs" role="tablist">
+          <button class="on" role="tab" data-img="media/how/lever_base.jpg"><b data-zh="基础">Base</b><span data-zh="按生成结果原样呈现的 L5 实例。">The level-5 instance as generated.</span></button>
+          <button role="tab" data-img="media/how/lever_occ.jpg" data-lever="occ"><b data-zh="+ 遮挡">+ Occlusion</b><em></em><span data-zh="不透明的顶罩从某些角度挡住部分路线。罩子没有实体，不会发生碰撞。">An opaque cover hides part of the course from some viewpoints. It is not solid.</span></button>
+          <button role="tab" data-img="media/how/lever_rot.jpg" data-lever="rot"><b data-zh="+ 旋转">+ Rotation</b><em></em><span data-zh="整条路线被转了一个角度并偏离凸点网格，直线段不再沿着标尺方向。">The course is turned and shifted off the stud grid: its straight parts no longer run along the rulers.</span></button>
+          <button role="tab" data-img="media/how/lever_tool.jpg" data-lever="tool"><b data-zh="+ 载荷坐标系">+ Payload axes</b><em></em><span data-zh="移动和旋转要按载荷自己的坐标轴下达，载荷上画着红、绿、蓝三个箭头。这是唯一让分数上升的杠杆：沿心形自身的对称轴旋转反而更顺手。">Moves and turns are given in the payload's own axes, drawn on it as red, green and blue arrows. The one lever that raised scores: turning about a shape's own axes can be easier.</span></button>
+          <button role="tab" data-img="media/how/lever_blueprint.jpg" data-lever="blueprint"><b data-zh="+ 蓝图">+ Blueprint</b><em></em><span data-zh="导线中段藏进不透明的隧道，底板后面立着一张半比例的图纸。">The middle of the wire runs inside an opaque tunnel; a half-scale drawing stands behind the board.</span></button>
+          <button role="tab" data-img="media/how/lever_base.jpg" data-text="1" data-lever="nonum"><b data-zh="+ 去数字">+ No numbers</b><em></em><span data-zh="动作被挡住时只报告“提前停止”，走了多远要自己从画面里看。">A blocked motion is reported only as stopped early; how far it got must be read from the image.</span></button>
+        </div>
+        <p class="lv-desc" aria-live="polite" data-zh="按生成结果原样呈现的 L5 实例。">The level-5 instance as generated.</p>
+      </div>
+    </article>
+  </section>
+
+  <section id="compare" class="compare">
+    <div class="sec-head">
+      <p class="eyebrow" data-zh="与现有基准有何不同">Why SpaceAct</p>
+      <h2 data-zh="要动手，<br>不只是答题。">Acting, not answering.</h2>
+      <p data-zh="大多数空间推理基准是让模型看图答题。交互式基准虽然让模型动手，却常常直接给出物体坐标、替它规划运动轨迹，并且在两步之间让世界静止不动。SpaceAct 把这些捷径全部拿掉。">Most spatial benchmarks ask a model questions about a picture. Interactive ones let it act, but usually hand it object coordinates, plan its motions for it, and pause the world between moves. SpaceAct takes those shortcuts away.</p>
+    </div>
+    <div class="bt-wrap" id="bt"></div>
+    <p class="cmp-note" data-zh="来自论文表 1。○ 表示部分支持：只在部分档位提供，或只做离散的碰撞检查。">From Table 1 of the paper. ○ partial: only in selected tiers, or with discrete collision checks.</p>
+    <div class="cmp-facts">
+      <article class="fact"><span class="how-n" data-zh="此外">Also</span><h3 data-zh="只收最难档。">Hardest tier only.</h3><p data-zh="108 个实例全部取自各题族最难的档位（L5，有 L7 的取 L7），每个题族 3 个；其中 44 个构成主实验矩阵。">All 108 instances come from each family's hardest available tier (L5, or L7 where it exists), three per family; 44 of them form the main evaluation matrix.</p></article>
+      <article class="fact"><span class="how-n" data-zh="此外">Also</span><h3 data-zh="每道题都有解。">Every instance is solvable.</h3><p data-zh="离散谜题由 BFS、Dijkstra 或精确覆盖算出最优解；连续操控与搭建题由脚本化参考解回放或荷载检查验证。生成器还会剔除已知捷径。">Discrete puzzles are solved optimally by BFS, Dijkstra or exact cover; continuous and construction tasks are verified by replaying scripted reference solutions or by their load checkers. Generators also reject instances with known shortcuts.</p></article>
+      <article class="fact"><span class="how-n" data-zh="此外">Also</span><h3 data-zh="分数留有余地。">A score with headroom.</h3><p data-zh="分层得分会扣掉多余动作、碰撞和轮数，所以即便最强的 Claude Opus 5.5 也只有 79.1 分，基准的上方还有很大空间。">The tiered score charges for surplus actions, collisions and turns, so even the strongest model, Claude Opus 5.5, averages 79.1 and the top of the benchmark has room to spare.</p></article>
+    </div>
+  </section>
+
+  <section id="more" class="more">
+    <div class="more-head">
+      <p class="eyebrow" data-zh="回放">Replays</p>
+      <h2 data-zh="六大类，各选一局。">One from each of the six categories.</h2>
+      <p data-zh="每一局都是真实记录，在基准自己的环境里逐个动作重新执行。点开任意一局观看完整过程，结尾会给出其他模型在同一实例上的结果。最后一局是论文里的对照案例：同一道题，两个模型。">Each is a real episode, re-executed action by action in the benchmark's own environment. Click one to watch it unfold, with the other models' results on the same instance at the end. The last is the paper's case study: one instance, two models.</p>
+    </div>
+    <div class="case-cards">
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Ten bridges, one chasm." data-zh-aria-label="回放：十座桥，一道深谷。" data-case="h1" data-task="H1_slender_chasm16" data-label="B1 · Chasm Bridge" data-zh-data-label="B1 · 深谷架桥" data-orbit="-30,8,26,1.0" data-board-title="B1 · ten models · scored bridges" data-zh-data-board-title="B1 · 10 个模型 · 计分的桥">
+        <div class="cc-img"><img src="media/cases/posters/h1.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="结构搭建与工程力学">Construction &amp; Mechanics</span><h3 data-zh="十座桥，一道深谷。">Ten bridges, one chasm.</h3><p data-zh="Claude Opus 5.5 用十块砖跨过 18 个凸点宽的深谷，33 g 的桥扛住了 2,304 g。10 个模型里有 6 个通过了 1,800 g 的荷载测试。">Claude Opus 5.5 spans 18 studs with ten bricks: 33 g that hold 2,304 g. Six of the ten models passed the 1,800 g load test.</p><span class="cc-meta" data-zh="Claude Opus 5.5 · 10 块砖 · 2,304 g">Claude Opus 5.5 · 10 parts · 2,304 g</span></div>
+        <template><p class="kicker" data-zh="结构搭建与工程力学 · B1 深谷架桥">Construction &amp; Mechanics · B1 Chasm Bridge</p><h2 data-zh="十块砖，<br>扛住 2.3 公斤。">Ten bricks,<br>2.3 kilograms.</h2><p data-zh="在两根细高的 2×2 桥墩之间架起一座跨度 18 个凸点的桥；每放一块砖都要校核会不会因自重坍塌，建成后还要承受三区移动荷载，扛住 1,800 g 才算通过。Claude Opus 5.5 在第 51 轮提交了一座十块砖、33 g、能扛住 2,304 g 的桥，之后 49 轮都没能超越它。结尾会把每个模型计分的桥排成一排。">Bridge an 18-stud chasm between two slender 2×2 piers; every placement is checked for self-weight collapse, and the finished bridge faces a three-zone moving load it must survive at 1,800 g. Claude Opus 5.5 submits a ten-brick, 33 g bridge that holds 2,304 g on turn 51, then spends its last 49 turns failing to beat it. The finale lines up every model's scored bridge.</p></template>
+      </article>
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Turn the world, not the ball." data-zh-aria-label="回放：转的是世界，不是球。" data-case="v3" data-label="P4 · 3D Gravity Maze · L3" data-zh-data-label="P4 · 三维重力迷宫 · L3" data-orbit="-30,30,26,1.0" data-board-title="P4-L3 · probe runs" data-zh-data-board-title="P4-L3 · 探测实验">
+        <div class="cc-img"><img src="media/cases/posters/v3.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="组合规划与解谜">Planning &amp; Puzzles</span><h3 data-zh="转的是世界，不是球。">Turn the world, not the ball.</h3><p data-zh="把封闭的 3×3×3 迷宫一次转 90°，直到两颗球都落进各自的格子。已完成的 16 局里唯一一次通关。">Quarter-turn a closed 3×3×3 maze until both balls settle in their cells. The only solve in 16 finished runs.</p><span class="cc-meta" data-zh="GPT-6 Astra · 59 轮 · 0 次碰撞">GPT-6 Astra · 59 turns · 0 collisions</span></div>
+        <template><p class="kicker" data-zh="组合规划与解谜 · P4 三维重力迷宫 · L3">Planning &amp; Puzzles · P4 3D Gravity Maze · L3</p><h2 data-zh="转的是世界，<br>不是球。">Turn the world,<br>not the ball.</h2><p data-zh="每次把封闭的 3×3×3 迷宫转 90°，每转一次，球都会一直下落到停住为止，直到两颗球都停在各自的格子里。在 P4 迷宫已完成的 16 局中，只有这一局到达终点：GPT-6 Astra，用了 59 轮。">Rotate a closed 3×3×3 maze a quarter turn at a time until both balls rest in their cells; after every turn they fall until they stop. Of the 16 finished runs on P4 mazes, this is the only one that reached the goal: GPT-6 Astra, in 59 turns.</p></template>
+      </article>
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Roll with the braid." data-zh-aria-label="回放：跟着麻花转。" data-case="d2" data-task="D2-L7-s100" data-label="M4 · Twin Rings · L7" data-zh-data-label="M4 · 麻花双环 · L7" data-board-title="M4-L7 · same instance" data-zh-data-board-title="M4-L7 · 同一实例" data-orbit="-28,10,30,1.0">
+        <div class="cc-img"><img src="media/cases/posters/d2.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="连续六自由度操控">6-DoF Manipulation</span><h3 data-zh="跟着麻花转。">Roll with the braid.</h3><p data-zh="两个焊在一起的圆环，各穿在一根麻花状导线上；中段藏在隧道里，整条路线还偏离了凸点网格。Claude Opus 5.5 用 22 轮带它们穿了过去，只撞了一次。">Two rings welded together, each threaded on one of two braided wires; the middle hides in a tunnel and the course sits off the grid. Claude Opus 5.5 gets them through in 22 turns with one collision.</p><span class="cc-meta" data-zh="Claude Opus 5.5 · 22 轮 · 1 次碰撞">Claude Opus 5.5 · 22 turns · 1 collision</span></div>
+        <template><p class="kicker" data-zh="连续六自由度操控 · M4 麻花双环 · L7">6-DoF Manipulation · M4 Twin Rings · L7</p><h2 data-zh="跟着麻花<br>一起转。">Roll with<br>the braid.</h2><p data-zh="两个像眼镜一样连在一起的圆环，分别穿在两根麻花状导线上：导线怎么拧，这对圆环就得怎么滚，每个弯道还要跟着转向。L7 把路线转出凸点网格，把中段藏进不透明的隧道、只在底板后面立一张半比例图纸，还要求按载荷自身的坐标轴下达动作。Claude Opus 5.5 读懂图纸、看了 14 次，用 22 轮通过，只撞了一次；另外 9 个模型里只有 Gemini 4 Argon 也通过了，用了 81 轮、撞了 50 次。">Two rings joined like spectacles ride on two braided wires: the pair has to roll as the wires twist and turn through every bend. Level 7 turns the course off the stud grid, hides its middle in an opaque tunnel with only a half-scale drawing behind the board, and takes moves in the payload's own axes. Claude Opus 5.5 reads the drawing, looks 14 times and gets through in 22 turns with one collision; of the nine other models only Gemini 4 Argon also makes it, in 81 turns with 50 collisions.</p></template>
+      </article>
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Fill a box you can't see into." data-zh-aria-label="回放：装满一个看不见里面的箱子。" data-case="v1" data-task="V1-L5-s100" data-label="A3 · Box Packing · L5" data-zh-data-label="A3 · 不透明深箱装箱 · L5" data-board-title="A3-L5 · same instance" data-zh-data-board-title="A3-L5 · 同一实例" data-orbit="-28,14,38,1.0">
+        <div class="cc-img"><img src="media/cases/posters/v1.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="拼装与装箱">Assembly &amp; Packing</span><h3 data-zh="装满一个看不见里面的箱子。">Fill a box you can't see into.</h3><p data-zh="七块形状未知的积木，一个四壁不透明的 4×3×3 箱子。65 轮装满，只撞了一次；10 个模型里只有它做到了。">Seven pieces of unknown shape, a 4×3×3 box with opaque walls. Filled in 65 turns with one collision, the only one of ten models to do it.</p><span class="cc-meta" data-zh="GPT-6 Astra · 65 轮 · 1 次碰撞">GPT-6 Astra · 65 turns · 1 collision</span></div>
+        <template><p class="kicker" data-zh="拼装与装箱 · A3 不透明深箱装箱 · L5">Assembly &amp; Packing · A3 Box Packing · L5</p><h2 data-zh="装满一个<br>看不见里面的箱子。">Fill a box you<br>can't see into.</h2><p data-zh="用形状从未被描述过的方块积木装满一个 4×3×3 的木箱：抓住每块积木上的白色方块，转好方向，从上方放进去，还要避开镜像诱饵。GPT-6 Astra 用 65 轮装满，只撞了一次，是 10 个模型中唯一的通关；Kimi K3 和 MiMo V2.6 Pro 分别停在 17% 和 33%。">Fill a 4×3×3 wooden box with cube pieces whose shapes are never described: pick each by its white cube, turn it, drop it in from above, and leave the mirror-image decoys out. GPT-6 Astra fills it in 65 turns with one collision, the only solve among the ten models; Kimi K3 and MiMo V2.6 Pro stall at 17% and 33%.</p></template>
+      </article>
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Build the shadow, not the shape." data-zh-aria-label="回放：搭的是影子，不是形状。" data-case="v2" data-task="V2-L5-s100" data-label="V1 · Shadow Build · L5" data-zh-data-label="V1 · 斜光影子墙 · L5" data-board-title="V1-L5 · same instance" data-zh-data-board-title="V1-L5 · 同一实例" data-orbit="-36,6,36,1.12">
+        <div class="cc-img"><img src="media/cases/posters/v2.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="多视图感知与三维重建">Multi-View Perception</span><h3 data-zh="搭的是影子，不是形状。">Build the shadow, not the shape.</h3><p data-zh="两面墙，一束斜光，三个轮廓要填满。三次回复，十一块砖。">Two walls, one slanting light, three outlines to fill. Eleven bricks in three replies.</p><span class="cc-meta" data-zh="Claude Opus 5.5 · 6 轮 · 0 次碰撞">Claude Opus 5.5 · 6 turns · 0 collisions</span></div>
+        <template><p class="kicker" data-zh="多视图感知与三维重建 · V1 斜光影子墙 · L5">Multi-View Perception · V1 Shadow Build · L5</p><h2 data-zh="搭的是影子，<br>不是形状。">Build the shadow,<br>not the shape.</h2><p data-zh="堆叠积木，让斜射的光在两面墙上投出与轮廓完全一致的影子，同时让底面正好填满第三个轮廓。Claude Opus 5.5 看了三次，然后用三次回复放完全部十一块砖。Gemini 4 Argon 花了 98 轮，停在 92%。">Stack bricks so a slanting light casts exactly the outlined shadows on two walls while the footprint fills a third outline. Claude Opus 5.5 looks three times, then builds it in three replies with all eleven bricks. Gemini 4 Argon spends 98 turns and stops at 92%.</p></template>
+      </article>
+      <article class="case-card" tabindex="0" role="button" aria-label="Replay: Clock it, then drop." data-zh-aria-label="回放：先测速，再空投。" data-case="z20" data-task="Z20-L7-s100" data-label="D3 · Tunnel Ball Drop · L7" data-zh-data-label="D3 · 隧道空投 · L7" data-orbit="-34,4,26,0.92" data-board-title="D3-L7 · ten models" data-zh-data-board-title="D3-L7 · 10 个模型">
+        <div class="cc-img"><img src="media/cases/posters/z20.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看回放">▶ Watch the replay</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="时序、物理与机制推理">Dynamics &amp; Mechanisms</span><h3 data-zh="先测速，再空投。">Clock it, then drop.</h3><p data-zh="列车在隧道里变速，没人告诉它怎么变。从频闪画面里测出杯子经过的时刻，等下一圈再放球。">A train changes speed inside a tunnel and nobody says how. Time the cup from the strobe frames, then drop on the next lap.</p><span class="cc-meta" data-zh="GPT-6 Astra · 10 轮 · 一球命中">GPT-6 Astra · 10 turns · one ball, one catch</span></div>
+        <template><p class="kicker" data-zh="时序、物理与机制推理 · D3 隧道空投 · L7">Dynamics &amp; Mechanisms · D3 Tunnel Ball Drop · L7</p><h2 data-zh="先测速，<br>再空投。">Clock it,<br>then drop.</h2><p data-zh="模型思考时世界是冻结的，每次回复都换回一组 5 帧频闪。L7 不再告知隧道里的车速。GPT-6 Astra 测出绿色杯子约在 10.71 秒经过标记，判断立刻放球已经来不及，于是等列车再跑一圈，在杯子驶出隧道、离标记约一秒时放球：一球命中，共 10 轮。10 个模型中有 5 个接住了这颗球。">The world freezes while the model thinks; every reply comes back as a 5-frame strobe. At level 7 the tunnel speeds are no longer reported. GPT-6 Astra times the green cup crossing its marker at about 10.71 s, judges that dropping now would be late, waits out the train's next lap and releases as the cup leaves the tunnel about a second from the marker: one ball, one catch, 10 turns. Five of the ten models made the catch.</p></template>
+      </article>
+      <article class="case-card wide pair-card" tabindex="0" role="button" aria-label="Replay: Same strategy, different grounding." data-zh-aria-label="回放：同样的策略，不同的定位。" data-case="d7" data-pair="d7q" data-task="Z26-L5-s100" data-label="D7 · Mirror Wire · L5" data-zh-data-label="D7 · 镜像螺旋导线 · L5" data-orbit="-22,6,22,0.9" data-board-title="D7-L5 · ten models" data-zh-data-board-title="D7-L5 · 10 个模型">
+        <div class="cc-img"><img src="media/cases/posters/d7.jpg" alt="" loading="lazy"><span class="cc-play" data-zh="▶ 观看两局回放">▶ Watch both runs</span></div>
+        <div class="cc-body"><span class="cc-cat" data-zh="论文案例 · 同一实例，两个模型">Case study · one instance, two models</span><h3 data-zh="同样的策略，不同的定位。">Same strategy, different grounding.</h3><p data-zh="圆环要沿挡板后面的导线前进，导线的走向只能从俯视影子窗、旋转过的侧面镜像和每次碰撞里推断。两个模型都把每次受阻当作测量导线位置的探针。Claude Opus 5.5 把接触点拟合成一致的三维假设，34 轮通关；Qwen 3.8 Max 把接触规则弄反、把俯视图里的斜率读反，撞了 93 次，停在 46%。">A ring must follow a wire hidden behind a screen, whose course shows only in an overhead shadow window, a mirror turned on its side, and every collision. Both models treat each blocked move as a probe of the wire. Claude Opus 5.5 fits the contacts into one consistent 3D hypothesis and solves it in 34 turns; Qwen 3.8 Max inverts the contact rule, reads the overhead slope backwards, and stalls at 46% after 93 collisions.</p><span class="cc-meta" data-zh="Claude Opus 5.5 对 Qwen 3.8 Max · 回放中可切换两局">Claude Opus 5.5 vs Qwen 3.8 Max · switch runs inside the replay</span></div>
+        <template><p class="kicker" data-zh="时序、物理与机制推理 · D7 镜像螺旋导线 · L5">Dynamics &amp; Mechanisms · D7 Mirror Wire · L5</p><h2 data-zh="同样的策略，<br>不同的定位。">Same strategy,<br>different grounding.</h2><p data-zh="导线藏在挡板后面，走向只能从俯视影子窗、侧放的镜子和每次碰撞里推断。Claude Opus 5.5 把接触点拟合成几何假设：“两条螺旋拟合都与目前每个受阻点和安全点吻合”，34 轮、15 次碰撞通关。Qwen 3.8 Max 的思路相同，却在定位上反复出错：“我把接触规则弄反了”“我的 xy 斜率读反了”，撞了 93 次后停在 46%。左上角可以切换两局。">The wire runs behind a screen; its course shows only in an overhead shadow window, a mirror on its side, and every collision. Claude Opus 5.5 fits the contacts into a geometric hypothesis, “Two helix fits match every block and safe point so far”, and solves it in 34 turns with 15 collisions. Qwen 3.8 Max follows the same scheme but keeps grounding it wrongly, “I had the touch rule inverted”, “My xy slope was backwards”, and stalls at 46% after 93 collisions. Switch runs at the top left.</p></template>
+      </article>
+    </div>
+  </section>
+
+  <section id="results" class="results">
+    <div class="sec-head">
+      <p class="eyebrow" data-zh="结果">Results</p>
+      <h2 data-zh="主实验结果。">Main results.</h2>
+      <p data-zh="10 个前沿多模态大模型跑同样的 44 个主实验实例（每个模型每个实例一局，种子 100），每局最多 100 轮、每轮最多 5 个动作。得分是 41 个分级实例上分层得分的平均值，通关率按全部 44 个实例计算，类别各栏是类内通关率。数字来自论文表 3。">Ten frontier MLLMs on the same 44-instance main matrix (one run per model and instance, seed 100), up to 100 turns and 5 actions per turn. Score is the tiered score averaged over the 41 graded instances, SR is the success rate over all 44, and each category column is the within-category success rate. Numbers from Table 3 of the paper.</p>
+    </div>
+    <div class="lb-wrap" id="t3"></div>
+    <div class="r-extra">
+      <figure class="r-curve" id="r-curve"></figure>
+      <div class="r-notes" id="r-notes"></div>
+    </div>
+  </section>
+
+  <section id="diagnosis" class="diagnosis">
+    <div class="sec-head">
+      <p class="eyebrow" data-zh="瓶颈在哪">What limits models</p>
+      <h2 data-zh="瓶颈在三维定位，<br>不在规划。">Grounding,<br>not planning.</h2>
+      <p data-zh="同一批 L5 实例再跑一遍，每次只把一项能力换成真值或拿掉。+plan 给出参考高层计划（转向与区域，距离仍由模型自己定）；+state 在计划之外，每轮再给出粗略布局和载荷的精确三维位姿。所有对比都和同一模型在同一实例上的主实验对局配对。">Each diagnostic reruns the same L5 instances with one capability replaced by ground truth or taken away. +plan adds a reference high-level plan (turns and regions; distances are left to the model); +state adds the plan, the coarse layout and the exact 3D pose of the payload every turn. Every comparison is paired with the same model's main-matrix episode on the same instance.</p>
+    </div>
+    <div class="dg" id="dg"></div>
+  </section>
+
+  <section id="findings" class="findings">
+    <div class="sec-head">
+      <p class="eyebrow" data-zh="发现">Findings</p>
+      <h2 data-zh="从对局里看到了什么。">What the runs show.</h2>
+      <p data-zh="论文对全部主实验轨迹的分析中最突出的三条规律，每一条都链接到能亲眼看到它的回放。">Three patterns from the paper's analysis of every main-matrix trajectory, each linked to a replay where you can watch it happen.</p>
+    </div>
+    <div class="fx-grid">
+      <article class="fx-card" data-fx="levers"></article>
+      <article class="fx-card" data-fx="loops"></article>
+      <article class="fx-card" data-fx="modes"></article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>
+      <p class="eyebrow" data-zh="引用">Cite</p>
+      <pre id="bibtex">@article{spaceact2026,
+  title  = {SpaceAct: Benchmarking 3D Spatial and Temporal Reasoning
+            via Closed-Loop Action and Active Perception},
+  author = {Shi, Chenglong and Yuan, Zekai and Song, Yue and Pu, Jon and Wu, Will},
+  year   = {2026}
+}</pre>
+    </div>
+    <p class="fine" data-zh="回放数据：均为 SpaceAct 评测中的真实对局（来自主实验；P4 来自 L3 探测实验），在基准自己的环境中逐个动作重新执行，并在浏览器中重新渲染。排行榜、诊断实验和发现中的数字均取自论文的表格与图。">Replay data: real episodes from SpaceAct evaluation runs (main evaluation; P4 from a probe run at level 3), re-executed action by action in the benchmark's own environment and re-rendered in the browser. The leaderboard, diagnostics and findings reproduce the paper's tables and figures.</p>
+  </footer>
+
+  <div class="player" id="player" hidden role="dialog" aria-modal="true" aria-label="Replay" data-zh-aria-label="回放">
+    <div class="stage">
+      <div class="stage-flash"></div>
+      <div class="chapters"><article class="chapter on"></article></div>
+      <button class="player-close" type="button" aria-label="Close replay" data-zh-aria-label="关闭回放">✕</button>
+      <div class="player-controls"><button class="pc-play" type="button" data-zh="❚❚ 暂停">❚❚ pause</button><span data-zh="滚动或拖动时间轴快进快退 · ← → 逐轮切换 · Esc 关闭">scroll or drag the timeline to scrub · ← → step a turn · esc closes</span></div>
+    </div>
+  </div>
+
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/vendor/lenis.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

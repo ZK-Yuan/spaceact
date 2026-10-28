@@ -1,0 +1,1265 @@
+{
+ "updated": "2026-10-21 16:45:51",
+ "main": {
+  "finished": 440,
+  "planned": 440,
+  "complete": true,
+  "tasks": 44,
+  "graded": 41,
+  "models": 10,
+  "board": [
+   {
+    "id": "claude-opus-5.5",
+    "name": "Claude Opus 5.5",
+    "solved": 41,
+    "failed": 3,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      6,
+      6
+     ],
+     "puzzle": [
+      6,
+      7
+     ],
+     "manip": [
+      10,
+      11
+     ],
+     "assembly": [
+      3,
+      4
+     ],
+     "perception": [
+      3,
+      3
+     ],
+     "dynamics": [
+      13,
+      13
+     ]
+    },
+    "score": 79.1
+   },
+   {
+    "id": "gpt-astra-6",
+    "name": "GPT-6 Astra",
+    "solved": 37,
+    "failed": 7,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      5,
+      6
+     ],
+     "puzzle": [
+      6,
+      7
+     ],
+     "manip": [
+      7,
+      11
+     ],
+     "assembly": [
+      4,
+      4
+     ],
+     "perception": [
+      3,
+      3
+     ],
+     "dynamics": [
+      12,
+      13
+     ]
+    },
+    "score": 65.0
+   },
+   {
+    "id": "gemini-4-argon",
+    "name": "Gemini 4 Argon",
+    "solved": 29,
+    "failed": 15,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      3,
+      6
+     ],
+     "puzzle": [
+      4,
+      7
+     ],
+     "manip": [
+      7,
+      11
+     ],
+     "assembly": [
+      3,
+      4
+     ],
+     "perception": [
+      1,
+      3
+     ],
+     "dynamics": [
+      11,
+      13
+     ]
+    },
+    "score": 42.1
+   },
+   {
+    "id": "muse-wonder-1.0",
+    "name": "Muse Wonder 1.0",
+    "solved": 19,
+    "failed": 25,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      1,
+      6
+     ],
+     "puzzle": [
+      5,
+      7
+     ],
+     "manip": [
+      2,
+      11
+     ],
+     "assembly": [
+      0,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      11,
+      13
+     ]
+    },
+    "score": 29.0
+   },
+   {
+    "id": "doubao-seed-2.1-pro",
+    "name": "Doubao Seed 2.1 Pro",
+    "solved": 17,
+    "failed": 27,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      2,
+      6
+     ],
+     "puzzle": [
+      4,
+      7
+     ],
+     "manip": [
+      2,
+      11
+     ],
+     "assembly": [
+      1,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      8,
+      13
+     ]
+    },
+    "score": 24.7
+   },
+   {
+    "id": "qwen-3.8-max",
+    "name": "Qwen 3.8 Max",
+    "solved": 16,
+    "failed": 28,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      1,
+      6
+     ],
+     "puzzle": [
+      2,
+      7
+     ],
+     "manip": [
+      3,
+      11
+     ],
+     "assembly": [
+      2,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      8,
+      13
+     ]
+    },
+    "score": 21.5
+   },
+   {
+    "id": "deepseek-v4.1-flash",
+    "name": "DeepSeek V4.1 Flash",
+    "solved": 14,
+    "failed": 30,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      1,
+      6
+     ],
+     "puzzle": [
+      4,
+      7
+     ],
+     "manip": [
+      1,
+      11
+     ],
+     "assembly": [
+      1,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      7,
+      13
+     ]
+    },
+    "score": 19.5
+   },
+   {
+    "id": "kimi-k3",
+    "name": "Kimi K3",
+    "solved": 7,
+    "failed": 37,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      1,
+      6
+     ],
+     "puzzle": [
+      2,
+      7
+     ],
+     "manip": [
+      0,
+      11
+     ],
+     "assembly": [
+      1,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      3,
+      13
+     ]
+    },
+    "score": 10.4
+   },
+   {
+    "id": "mimo-v2.6-pro",
+    "name": "MiMo V2.6 Pro",
+    "solved": 3,
+    "failed": 41,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      1,
+      6
+     ],
+     "puzzle": [
+      0,
+      7
+     ],
+     "manip": [
+      0,
+      11
+     ],
+     "assembly": [
+      0,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      2,
+      13
+     ]
+    },
+    "score": 6.1
+   },
+   {
+    "id": "step-5-preview",
+    "name": "Step 5 Preview",
+    "solved": 3,
+    "failed": 41,
+    "running": 0,
+    "queued": 0,
+    "cats": {
+     "build": [
+      2,
+      6
+     ],
+     "puzzle": [
+      0,
+      7
+     ],
+     "manip": [
+      0,
+      11
+     ],
+     "assembly": [
+      0,
+      4
+     ],
+     "perception": [
+      0,
+      3
+     ],
+     "dynamics": [
+      1,
+      13
+     ]
+    },
+    "score": 4.8
+   }
+  ]
+ },
+ "cases": {
+  "M1-L5-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 71,
+    "contacts": 1,
+    "score": 71.93
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 18,
+    "contacts": 0,
+    "score": 96.35
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": false,
+    "progress": 0.5541,
+    "turns": 100,
+    "contacts": 14,
+    "score": 6.03
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.1486,
+    "turns": 100,
+    "contacts": 18,
+    "score": 1.16
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.0811,
+    "turns": 100,
+    "contacts": 8,
+    "score": 1.46
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": 0.2162,
+    "turns": 100,
+    "contacts": 11,
+    "score": 3.02
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": 0.0541,
+    "turns": 91,
+    "contacts": 29,
+    "score": 0.17
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.1351,
+    "turns": 89,
+    "contacts": 42,
+    "score": 0.14
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.2027,
+    "turns": 100,
+    "contacts": 36,
+    "score": 0.35
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.1081,
+    "turns": 100,
+    "contacts": 21,
+    "score": 0.66
+   }
+  ],
+  "D2-L7-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": false,
+    "progress": 0.5861,
+    "turns": 100,
+    "contacts": 27,
+    "score": 2.16
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 22,
+    "contacts": 1,
+    "score": 82.59
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 81,
+    "contacts": 50,
+    "score": 40.04
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.1036,
+    "turns": 100,
+    "contacts": 25,
+    "score": 0.45
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.1352,
+    "turns": 100,
+    "contacts": 23,
+    "score": 0.7
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": 0.3184,
+    "turns": 100,
+    "contacts": 23,
+    "score": 1.64
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": 0.3595,
+    "turns": 100,
+    "contacts": 52,
+    "score": 0.16
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.3271,
+    "turns": 100,
+    "contacts": 61,
+    "score": 0.07
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.1389,
+    "turns": 100,
+    "contacts": 19,
+    "score": 1.0
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.1306,
+    "turns": 100,
+    "contacts": 19,
+    "score": 0.94
+   }
+  ],
+  "V1-L5-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 65,
+    "contacts": 1,
+    "score": 68.53
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": false,
+    "progress": null,
+    "turns": null,
+    "contacts": null,
+    "score": 0
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": false,
+    "progress": 0.6667,
+    "turns": 94,
+    "contacts": 26,
+    "score": 2.67
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.1667,
+    "turns": 100,
+    "contacts": 10,
+    "score": 2.53
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.5,
+    "turns": 100,
+    "contacts": 30,
+    "score": 1.43
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": 0.5,
+    "turns": 100,
+    "contacts": 5,
+    "score": 11.53
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": 0.5,
+    "turns": 100,
+    "contacts": 24,
+    "score": 2.37
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.1667,
+    "turns": 19,
+    "contacts": 2,
+    "score": 4.94
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.3333,
+    "turns": 95,
+    "contacts": 40,
+    "score": 0.42
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.3333,
+    "turns": 100,
+    "contacts": 16,
+    "score": 3.07
+   }
+  ],
+  "V2-L5-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 12,
+    "contacts": 0,
+    "score": 98.71
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 6,
+    "contacts": 0,
+    "score": 100.0
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": false,
+    "progress": 0.918,
+    "turns": 98,
+    "contacts": 5,
+    "score": 21.18
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.8116,
+    "turns": 100,
+    "contacts": 0,
+    "score": 28.41
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.6296,
+    "turns": 99,
+    "contacts": 0,
+    "score": 22.04
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": 0.9524,
+    "turns": 100,
+    "contacts": 0,
+    "score": 33.33
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": 0.7313,
+    "turns": 98,
+    "contacts": 3,
+    "score": 19.93
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.6814,
+    "turns": 98,
+    "contacts": 3,
+    "score": 18.57
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.5638,
+    "turns": 97,
+    "contacts": 0,
+    "score": 19.73
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.4211,
+    "turns": 93,
+    "contacts": 0,
+    "score": 14.74
+   }
+  ],
+  "Z20-L7-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 10,
+    "contacts": 0,
+    "score": 63.19
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 7,
+    "contacts": 0,
+    "score": 69.73
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 11,
+    "contacts": 0,
+    "score": 60.83
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.8111,
+    "turns": 16,
+    "contacts": 1,
+    "score": 26.12
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.8011,
+    "turns": 17,
+    "contacts": 1,
+    "score": 25.8
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 20,
+    "contacts": 0,
+    "score": 53.79
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": true,
+    "progress": 1.0,
+    "turns": 14,
+    "contacts": 0,
+    "score": 57.15
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.8775,
+    "turns": 17,
+    "contacts": 1,
+    "score": 28.26
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.411,
+    "turns": 27,
+    "contacts": 6,
+    "score": 8.72
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.411,
+    "turns": 18,
+    "contacts": 3,
+    "score": 11.2
+   }
+  ],
+  "H1_slender_chasm16": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 99,
+    "contacts": 1,
+    "score": null
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 100,
+    "contacts": 0,
+    "score": null
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 59,
+    "contacts": 2,
+    "score": null
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 98,
+    "contacts": 0,
+    "score": null
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": null,
+    "turns": 100,
+    "contacts": 13,
+    "score": null
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": null,
+    "turns": 99,
+    "contacts": 15,
+    "score": null
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": null,
+    "turns": 46,
+    "contacts": 4,
+    "score": null
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 92,
+    "contacts": 9,
+    "score": null
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": null,
+    "turns": 96,
+    "contacts": 57,
+    "score": null
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": true,
+    "progress": null,
+    "turns": 95,
+    "contacts": 34,
+    "score": null
+   }
+  ],
+  "Z26-L5-s100": [
+   {
+    "name": "GPT-6 Astra",
+    "status": "done",
+    "success": true,
+    "progress": 0.9608,
+    "turns": 67,
+    "contacts": 32,
+    "score": 40.31
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "status": "done",
+    "success": true,
+    "progress": 0.9608,
+    "turns": 34,
+    "contacts": 15,
+    "score": 43.25
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "status": "done",
+    "success": false,
+    "progress": 0.5908,
+    "turns": 100,
+    "contacts": 49,
+    "score": 0.35
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.2074,
+    "turns": 100,
+    "contacts": 57,
+    "score": 0.06
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "status": "done",
+    "success": false,
+    "progress": 0.3658,
+    "turns": 100,
+    "contacts": 89,
+    "score": 0.01
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "status": "done",
+    "success": false,
+    "progress": 0.6504,
+    "turns": 100,
+    "contacts": 87,
+    "score": 0.02
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "status": "done",
+    "success": false,
+    "progress": 0.4586,
+    "turns": 100,
+    "contacts": 93,
+    "score": 0.01
+   },
+   {
+    "name": "Kimi K3",
+    "status": "done",
+    "success": false,
+    "progress": 0.2156,
+    "turns": 100,
+    "contacts": 91,
+    "score": 0.0
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "status": "done",
+    "success": false,
+    "progress": 0.4416,
+    "turns": 100,
+    "contacts": 82,
+    "score": 0.02
+   },
+   {
+    "name": "Step 5 Preview",
+    "status": "done",
+    "success": false,
+    "progress": 0.2458,
+    "turns": 96,
+    "contacts": 83,
+    "score": 0.01
+   }
+  ]
+ },
+ "findings": {
+  "m1": [
+   {
+    "name": "Claude Opus 5.5",
+    "success": true,
+    "looks": 14,
+    "hits": 0,
+    "turns": 18,
+    "progress": 1.0
+   },
+   {
+    "name": "GPT-6 Astra",
+    "success": true,
+    "looks": 69,
+    "hits": 1,
+    "turns": 71,
+    "progress": 1.0
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "success": false,
+    "looks": 117,
+    "hits": 8,
+    "turns": 100,
+    "progress": 0.081
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "success": false,
+    "looks": 87,
+    "hits": 11,
+    "turns": 100,
+    "progress": 0.216
+   },
+   {
+    "name": "Gemini 4 Argon",
+    "success": false,
+    "looks": 85,
+    "hits": 14,
+    "turns": 100,
+    "progress": 0.554
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "success": false,
+    "looks": 77,
+    "hits": 18,
+    "turns": 100,
+    "progress": 0.149
+   },
+   {
+    "name": "Step 5 Preview",
+    "success": false,
+    "looks": 80,
+    "hits": 21,
+    "turns": 100,
+    "progress": 0.108
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "success": false,
+    "looks": 66,
+    "hits": 29,
+    "turns": 91,
+    "progress": 0.054
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "success": false,
+    "looks": 50,
+    "hits": 36,
+    "turns": 100,
+    "progress": 0.203
+   },
+   {
+    "name": "Kimi K3",
+    "success": false,
+    "looks": 78,
+    "hits": 42,
+    "turns": 89,
+    "progress": 0.135
+   }
+  ],
+  "behaviour": [
+   {
+    "id": "claude-opus-5.5",
+    "name": "Claude Opus 5.5",
+    "look_after_hit": 0.301,
+    "look_otherwise": 0.383,
+    "n_after_hit": 73,
+    "batch_after_hit": 3.24,
+    "batch_otherwise": 2.41
+   },
+   {
+    "id": "deepseek-v4.1-flash",
+    "name": "DeepSeek V4.1 Flash",
+    "look_after_hit": 0.316,
+    "look_otherwise": 0.691,
+    "n_after_hit": 784,
+    "batch_after_hit": 3.27,
+    "batch_otherwise": 1.89,
+    "look_solved": 0.486,
+    "look_failed": 0.636
+   },
+   {
+    "id": "doubao-seed-2.1-pro",
+    "name": "Doubao Seed 2.1 Pro",
+    "look_after_hit": 0.282,
+    "look_otherwise": 0.535,
+    "n_after_hit": 734,
+    "batch_after_hit": 2.31,
+    "batch_otherwise": 1.78,
+    "look_solved": 0.344,
+    "look_failed": 0.531
+   },
+   {
+    "id": "gemini-4-argon",
+    "name": "Gemini 4 Argon",
+    "look_after_hit": 0.272,
+    "look_otherwise": 0.491,
+    "n_after_hit": 526,
+    "batch_after_hit": 3.11,
+    "batch_otherwise": 2.34,
+    "look_solved": 0.424,
+    "look_failed": 0.463
+   },
+   {
+    "id": "gpt-astra-6",
+    "name": "GPT-6 Astra",
+    "look_after_hit": 0.453,
+    "look_otherwise": 0.637,
+    "n_after_hit": 214,
+    "batch_after_hit": 1.97,
+    "batch_otherwise": 1.62,
+    "look_solved": 0.511,
+    "look_failed": 0.828
+   },
+   {
+    "id": "kimi-k3",
+    "name": "Kimi K3",
+    "look_after_hit": 0.17,
+    "look_otherwise": 0.493,
+    "n_after_hit": 1216,
+    "batch_after_hit": 2.85,
+    "batch_otherwise": 2.01,
+    "look_solved": 0.222,
+    "look_failed": 0.396
+   },
+   {
+    "id": "mimo-v2.6-pro",
+    "name": "MiMo V2.6 Pro",
+    "look_after_hit": 0.142,
+    "look_otherwise": 0.621,
+    "n_after_hit": 1102,
+    "batch_after_hit": 1.86,
+    "batch_otherwise": 1.24,
+    "look_solved": 0.191,
+    "look_failed": 0.479
+   },
+   {
+    "id": "muse-wonder-1.0",
+    "name": "Muse Wonder 1.0",
+    "look_after_hit": 0.303,
+    "look_otherwise": 0.704,
+    "n_after_hit": 641,
+    "batch_after_hit": 2.98,
+    "batch_otherwise": 1.6,
+    "look_solved": 0.451,
+    "look_failed": 0.685
+   },
+   {
+    "id": "qwen-3.8-max",
+    "name": "Qwen 3.8 Max",
+    "look_after_hit": 0.296,
+    "look_otherwise": 0.535,
+    "n_after_hit": 938,
+    "batch_after_hit": 3.04,
+    "batch_otherwise": 2.23,
+    "look_solved": 0.333,
+    "look_failed": 0.5
+   },
+   {
+    "id": "step-5-preview",
+    "name": "Step 5 Preview",
+    "look_after_hit": 0.278,
+    "look_otherwise": 0.708,
+    "n_after_hit": 1041,
+    "batch_after_hit": 2.09,
+    "batch_otherwise": 1.46,
+    "look_solved": 0.194,
+    "look_failed": 0.613
+   }
+  ],
+  "h1": [
+   {
+    "name": "Gemini 4 Argon",
+    "success": true,
+    "load": 4654.0,
+    "mass": 119.0
+   },
+   {
+    "name": "GPT-6 Astra",
+    "success": true,
+    "load": 4090.0,
+    "mass": 84.0
+   },
+   {
+    "name": "Doubao Seed 2.1 Pro",
+    "success": true,
+    "load": 3434.0,
+    "mass": 99.0
+   },
+   {
+    "name": "Kimi K3",
+    "success": true,
+    "load": 2739.0,
+    "mass": 46.0
+   },
+   {
+    "name": "Step 5 Preview",
+    "success": true,
+    "load": 2478.0,
+    "mass": 95.0
+   },
+   {
+    "name": "Claude Opus 5.5",
+    "success": true,
+    "load": 2304.0,
+    "mass": 33.0
+   },
+   {
+    "name": "Muse Wonder 1.0",
+    "success": false,
+    "load": 1547.0,
+    "mass": 120.0
+   },
+   {
+    "name": "Qwen 3.8 Max",
+    "success": false,
+    "load": 788.0,
+    "mass": 24.0
+   },
+   {
+    "name": "DeepSeek V4.1 Flash",
+    "success": false,
+    "load": 192.0,
+    "mass": 72.0
+   },
+   {
+    "name": "MiMo V2.6 Pro",
+    "success": false,
+    "load": 38.0,
+    "mass": 30.0
+   }
+  ]
+ }
+}
